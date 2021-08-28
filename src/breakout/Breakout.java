@@ -30,7 +30,8 @@ public class Breakout extends Application {
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final Paint BACKGROUND = Color.AZURE;
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
-    public static final int OFFSET_AMOUNT = 50;
+    public static final int OFFSET_PADDLE_AMOUNT = 50;
+    public static final int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
     public static final int PADDLE_SPEED = 10;
     public static final double PADDLE_WIDTH = 100;
     public static final double PADDLE_HEIGHT = 20;
@@ -68,8 +69,8 @@ public class Breakout extends Application {
 
     private Scene setupGame (int width, int height, Paint background) {
         // Rectangle constructor parameters from example_animation in course gitlab
-        paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_AMOUNT , PADDLE_WIDTH, PADDLE_HEIGHT);
-        ball = new Ball(BALL_CENTER_X, BALL_CENTER_Y, BALL_RADIUS);
+        paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
+        ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
         bricks = new Bricks(SIZE, SIZE, 20, 20, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks);
