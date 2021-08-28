@@ -10,9 +10,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 
 /**
  * FROM EXAMPLE_ANIMATION: A basic example JavaFX program for the first lab.
@@ -39,10 +40,11 @@ public class Breakout extends Application {
     public static final Paint PADDLE_COLOR = Color.BISQUE;
 
     private Scene mainScene;
+    private Scene gameOverScene;
     private Rectangle paddle;
     private Ball ball;
-    private double ballSpeedX;
-    private double ballSpeedY;
+    private int lives;
+    Stage primaryStage;
 
 
     /**
@@ -51,9 +53,12 @@ public class Breakout extends Application {
     @Override
     public void start (Stage stage) {
         mainScene = setupGame(SIZE, SIZE, BACKGROUND);
-        stage.setScene(mainScene);
-        stage.setTitle(TITLE);
-        stage.show();
+        gameOverScene = setupGameOver(SIZE, SIZE, BACKGROUND);
+        lives = 3;
+        primaryStage = stage;
+        primaryStage.setScene(mainScene);
+        primaryStage.setTitle(TITLE);
+        primaryStage.show();
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> step(SECOND_DELAY)));
@@ -66,6 +71,21 @@ public class Breakout extends Application {
         ball = new Ball(BALL_CENTER_X, BALL_CENTER_Y, BALL_RADIUS);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball);
+        return setupScene(root, width, height, background);
+    }
+
+    private Scene setupGameOver(int width, int height, Paint background) {
+        // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+        Text gameOver = new Text("Game Over");
+        gameOver.setFont(Font.font ("Verdana", 20));
+        gameOver.setX(50);
+        gameOver.setY(50);
+        // All of the below was borrowed from example_animation in course gitlab
+        Group root = new Group(gameOver);
+        return setupScene(root, width, height, background);
+    }
+
+    private Scene setupScene(Group root, int width, int height, Paint background) {
         Scene scene = new Scene(root, width, height, background);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
@@ -74,10 +94,7 @@ public class Breakout extends Application {
     private void step (double elapsedTime) {
         handlePaddleIntersectingBounds(paddle);
         handleBallIntersectingBounds(ball);
-
-        ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
-        ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
-
+        updateBallPosition(ball, elapsedTime);
         if(isIntersecting(paddle, ball)) {
             ball.setSpeedY(-ball.getSpeedY());
         }
@@ -116,9 +133,21 @@ public class Breakout extends Application {
         } else if (ball.getCenterY() >= mainScene.getHeight()) {
             ball.setCenterY(BALL_CENTER_Y);
             ball.setCenterX(BALL_CENTER_X);
+            handleLifeDecrement();
         }
     }
 
+    private void handleLifeDecrement() {
+        lives--;
+        if(lives == 0) {
+            primaryStage.setScene(gameOverScene);
+        }
+    }
+
+    private void updateBallPosition(Ball ball, double elapsedTime) {
+        ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
+        ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
+    }
     private void handlePaddleIntersectingBounds(Rectangle paddle) {
         if(paddle.getX() <= 0) {
             paddle.setX(0);
