@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -32,12 +33,12 @@ public class Breakout extends Application {
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final int OFFSET_PADDLE_AMOUNT = 50;
     public static final int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
-    public static final int PADDLE_SPEED = 10;
+    public static final int PADDLE_SPEED = 25;
     public static final double PADDLE_WIDTH = 100;
     public static final double PADDLE_HEIGHT = 20;
     public static final double BALL_CENTER_X = 200;
     public static final double BALL_CENTER_Y = 140;
-    public static final double BALL_RADIUS = 10;
+    public static final double BALL_RADIUS = 8;
     public static final Paint PADDLE_COLOR = Color.BISQUE;
 
     private Scene mainScene;
@@ -47,6 +48,7 @@ public class Breakout extends Application {
     private Bricks bricks;
     private int lives;
     Stage primaryStage;
+    Group primaryRoot;
 
 
     /**
@@ -74,6 +76,7 @@ public class Breakout extends Application {
         bricks = new Bricks(SIZE, SIZE, 20, 20, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks);
+        primaryRoot = root;
         return setupScene(root, width, height, background);
     }
 
@@ -101,6 +104,17 @@ public class Breakout extends Application {
         if(isIntersecting(paddle, ball)) {
             ball.setSpeedY(-ball.getSpeedY());
         }
+
+        Node intersectedBrick = bricks.getBrickIntersecting(ball);
+        if(intersectedBrick != null) {
+            primaryRoot.getChildren().remove(intersectedBrick);
+            mainScene.setRoot(primaryRoot);
+            if(isSideCollision(intersectedBrick, ball)) {
+                ball.setSpeedX(-ball.getSpeedX());
+            } else {
+                ball.setSpeedY(-ball.getSpeedY());
+            }
+        }
     }
 
     // Borrowed from example_animation in course gitlab
@@ -110,7 +124,6 @@ public class Breakout extends Application {
             case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
         }
     }
-
 
     // Borrowed from example_animation in course gitlab
     private boolean isIntersecting (Shape a, Shape b) {
@@ -123,6 +136,24 @@ public class Breakout extends Application {
 //        return ! Shape.intersect(moverBounds, b).getBoundsInLocal().isEmpty();
     }
 
+    private boolean isSideCollision(Node stationaryNode, Ball ball) {
+        return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() && stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY();
+    }
+
+//    private boolean isTopCollision(Node stationaryNode, Ball ball) {
+//        System.out.print("Top of brick: ");
+//        System.out.println(stationaryNode.getBoundsInParent().getMinY());
+//        System.out.print("Bottom of ball: ");
+//        System.out.println(ball.getBoundsInParent().getMaxY());
+//        return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() + ball.getRadius();
+//    }
+//
+//    private boolean isBottomCollision(Node stationaryNode, Ball ball) {
+//        System.out.print("Bottom Collision: ");
+//        System.out.println(stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY() - ball.getRadius());
+//        return stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY() - ball.getRadius();
+//    }
+
     private void handleBallIntersectingBounds(Ball ball) {
         if(ball.getCenterX() - BALL_RADIUS <= 0) {
             ball.setCenterX(BALL_RADIUS);
@@ -134,8 +165,7 @@ public class Breakout extends Application {
             ball.setCenterY(BALL_RADIUS);
             ball.setSpeedY(-ball.getSpeedY());
         } else if (ball.getCenterY() >= mainScene.getHeight()) {
-            ball.setCenterY(BALL_CENTER_Y);
-            ball.setCenterX(BALL_CENTER_X);
+            ball.resetPosition();
             handleLifeDecrement();
         }
     }
@@ -151,6 +181,7 @@ public class Breakout extends Application {
         ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
         ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
     }
+
     private void handlePaddleIntersectingBounds(Rectangle paddle) {
         if(paddle.getX() <= 0) {
             paddle.setX(0);

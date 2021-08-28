@@ -1,7 +1,10 @@
 package breakout;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import org.w3c.dom.css.Rect;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -61,4 +64,16 @@ public class Bricks extends Group {
             }
         }
     }
+
+    public Node getBrickIntersecting(Shape shape) {
+        for(Node brick : getChildren()) {
+            if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
+                Node oldBrick = brick;
+                getChildren().remove(brick);
+                return oldBrick;
+            }
+        }
+        return null;
+    }
+
 }
