@@ -25,12 +25,12 @@ public class Breakout extends Application {
     // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
     // borrowed from example_animation in course gitlab
     public static final String TITLE = "Breakout Game";
-    public static final int SIZE = 400;
+    public static final int SIZE = 800;
     public static final int FRAMES_PER_SECOND = 60;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final Paint BACKGROUND = Color.AZURE;
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
-    public static final int OFFSET_AMOUNT = 190;
+    public static final int OFFSET_AMOUNT = 50;
     public static final int PADDLE_SPEED = 10;
     public static final double PADDLE_WIDTH = 100;
     public static final double PADDLE_HEIGHT = 20;
@@ -67,8 +67,9 @@ public class Breakout extends Application {
 
     private Scene setupGame (int width, int height, Paint background) {
         // Rectangle constructor parameters from example_animation in course gitlab
-        paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, PADDLE_HEIGHT / 2 + OFFSET_AMOUNT , PADDLE_WIDTH, PADDLE_HEIGHT);
+        paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_AMOUNT , PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(BALL_CENTER_X, BALL_CENTER_Y, BALL_RADIUS);
+
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball);
         return setupScene(root, width, height, background);
