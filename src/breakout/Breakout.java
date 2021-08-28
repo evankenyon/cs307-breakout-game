@@ -1,3 +1,5 @@
+package breakout;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -63,37 +65,20 @@ public class Breakout extends Application {
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, PADDLE_HEIGHT / 2 + OFFSET_AMOUNT , PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(BALL_CENTER_X, BALL_CENTER_Y, BALL_RADIUS);
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(paddle, ball.getCirc());
+        Group root = new Group(paddle, ball);
         Scene scene = new Scene(root, width, height, background);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
     }
 
     private void step (double elapsedTime) {
-        if(paddle.getX() <= 0) {
-            paddle.setX(0);
-        } else if (paddle.getX() + PADDLE_WIDTH >= mainScene.getWidth()) {
-            paddle.setX(mainScene.getWidth() - PADDLE_WIDTH);
-        }
-
-        if(ball.getCenterX() - BALL_RADIUS <= 0) {
-            ball.setCenterX(BALL_RADIUS);
-            ball.setSpeedX(-ball.getSpeedX());
-        } else if (ball.getCenterX() + BALL_RADIUS >= mainScene.getWidth()) {
-            ball.setCenterX(mainScene.getWidth() - BALL_RADIUS);
-            ball.setSpeedX(-ball.getSpeedX());
-        } else if (ball.getCenterY() - BALL_RADIUS <= 0) {
-            ball.setCenterY(BALL_RADIUS);
-            ball.setSpeedY(-ball.getSpeedY());
-        } else if (ball.getCenterY() >= mainScene.getHeight()) {
-            ball.setCenterY(BALL_CENTER_Y);
-            ball.setCenterX(BALL_CENTER_X);
-        }
+        handlePaddleIntersectingBounds(paddle);
+        handleBallIntersectingBounds(ball);
 
         ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
         ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
 
-        if(isIntersecting(paddle, ball.getCirc())) {
+        if(isIntersecting(paddle, ball)) {
             ball.setSpeedY(-ball.getSpeedY());
         }
     }
@@ -116,5 +101,29 @@ public class Breakout extends Application {
 //                                       a.getY() + a.getFitHeight() / 2,
 //                                       a.getFitWidth() / 2 - MOVER_SIZE / 20);
 //        return ! Shape.intersect(moverBounds, b).getBoundsInLocal().isEmpty();
+    }
+
+    private void handleBallIntersectingBounds(Ball ball) {
+        if(ball.getCenterX() - BALL_RADIUS <= 0) {
+            ball.setCenterX(BALL_RADIUS);
+            ball.setSpeedX(-ball.getSpeedX());
+        } else if (ball.getCenterX() + BALL_RADIUS >= mainScene.getWidth()) {
+            ball.setCenterX(mainScene.getWidth() - BALL_RADIUS);
+            ball.setSpeedX(-ball.getSpeedX());
+        } else if (ball.getCenterY() - BALL_RADIUS <= 0) {
+            ball.setCenterY(BALL_RADIUS);
+            ball.setSpeedY(-ball.getSpeedY());
+        } else if (ball.getCenterY() >= mainScene.getHeight()) {
+            ball.setCenterY(BALL_CENTER_Y);
+            ball.setCenterX(BALL_CENTER_X);
+        }
+    }
+
+    private void handlePaddleIntersectingBounds(Rectangle paddle) {
+        if(paddle.getX() <= 0) {
+            paddle.setX(0);
+        } else if (paddle.getX() + PADDLE_WIDTH >= mainScene.getWidth()) {
+            paddle.setX(mainScene.getWidth() - PADDLE_WIDTH);
+        }
     }
 }
