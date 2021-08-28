@@ -43,6 +43,7 @@ public class Breakout extends Application {
     private Scene gameOverScene;
     private Rectangle paddle;
     private Ball ball;
+    private Bricks bricks;
     private int lives;
     Stage primaryStage;
 
@@ -69,9 +70,9 @@ public class Breakout extends Application {
         // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_AMOUNT , PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(BALL_CENTER_X, BALL_CENTER_Y, BALL_RADIUS);
-
+        bricks = new Bricks(20, 20, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(paddle, ball);
+        Group root = new Group(paddle, ball, bricks);
         return setupScene(root, width, height, background);
     }
 
