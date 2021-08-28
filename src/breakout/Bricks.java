@@ -1,10 +1,8 @@
 package breakout;
 
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,26 +12,51 @@ public class Bricks extends Group {
     private Random rand;
     private ArrayList<Integer> blockedX;
     private ArrayList<Integer> blockedY;
+    private int brickWidth;
+    private int brickHeight;
+    private int sceneWidth;
+    private int sceneHeight;
+    private double frequency;
 
-    public Bricks(int width, int height, double frequency) {
+    public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double frequency) {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
         blockedY = new ArrayList<Integer>();
-        for(int x = 0; x <= 800; x += width + 1) {
+        this.brickWidth = brickWidth;
+        this.brickHeight = brickHeight;
+        this.sceneWidth = sceneWidth;
+        this.sceneHeight = sceneHeight;
+        this.frequency = frequency;
+        addBlockedCoordinates();
+        generateBricks();
+    }
+
+    private void addBlockedCoordinates() {
+        addBlockedXCoordinates();
+        addBlockedYCoordinates();
+    }
+
+    private void addBlockedXCoordinates() {
+        for(int x = 0; x <= sceneWidth; x += brickWidth + 1) {
             if(rand.nextDouble() <= frequency) {
                 blockedX.add(x);
             }
         }
-        for(int y = 0; y <= 400; y += height + 1) {
+    }
+
+    private void addBlockedYCoordinates() {
+        for(int y = 0; y <= sceneHeight/2; y += brickHeight + 1) {
             if(rand.nextDouble() <= frequency) {
                 blockedY.add(y);
             }
         }
+    }
 
-        for(int x = 0; x <= 800; x += width + 1) {
-            for(int y = 0; y <= 400; y += height + 1) {
+    private void generateBricks() {
+        for(int x = 0; x <= sceneWidth; x += brickWidth + 1) {
+            for(int y = 0; y <= sceneHeight/2; y += brickHeight + 1) {
                 if(! (blockedX.contains(x) || blockedY.contains(y))) {
-                    getChildren().add(new Rectangle(x, y, width, height));
+                    getChildren().add(new Rectangle(x, y, brickWidth, brickHeight));
                 }
             }
         }
