@@ -3,6 +3,7 @@ package breakout;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -63,7 +64,6 @@ public class Breakout extends Application {
         mainScene = setupGame(SIZE, SIZE, BACKGROUND);
         gameOverScene = setupTextScene(SIZE, SIZE, BACKGROUND, "Game Over");
         winScene = setupTextScene(SIZE, SIZE, BACKGROUND, "You win!");
-
         lives = 3;
         primaryStage = stage;
         primaryStage.setScene(mainScene);
@@ -80,12 +80,8 @@ public class Breakout extends Application {
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
         bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
-        // Label setup code was borrowed
-        scoreDisplay = new Label();
-        scoreDisplay.setFont(new Font("Verdana",30));
-        scoreDisplay.textProperty().bind(bricks.getScore().asString());
-        scoreDisplay.setLayoutX(50);
-        scoreDisplay.setLayoutY(700);
+        setupScoreDisplay();
+
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks, scoreDisplay);
         primaryRoot = root;
@@ -109,6 +105,17 @@ public class Breakout extends Application {
         return scene;
     }
 
+    // Label setup code was borrowed from https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
+    private void setupScoreDisplay() {
+        scoreDisplay = new Label();
+        scoreDisplay.setFont(new Font("Verdana",30));
+        // Found concat method and SimpleStringProperty from
+        // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
+        scoreDisplay.textProperty().bind(new SimpleStringProperty("Score: ").concat(bricks.getScore().asString()));
+        scoreDisplay.setLayoutX(50);
+        scoreDisplay.setLayoutY(700);
+    }
+
     private void step (double elapsedTime) {
         handlePaddleIntersectingBounds();
         handleBallIntersectingBounds();
@@ -128,15 +135,11 @@ public class Breakout extends Application {
 
     // Borrowed from example_animation in course gitlab
     private boolean isIntersecting (Shape a, Shape b) {
-        // with images can only check bounding box (as it is calculated in container with other objects)
         return b.getBoundsInParent().intersects(a.getBoundsInParent());
-        // with shapes, can check precisely (in this case, it is easy because the image is circular)
-//        Shape moverBounds = new Circle(a.getX() + a.getFitWidth() / 2,
-//                                       a.getY() + a.getFitHeight() / 2,
-//                                       a.getFitWidth() / 2 - MOVER_SIZE / 20);
-//        return ! Shape.intersect(moverBounds, b).getBoundsInLocal().isEmpty();
     }
 
+    // Borrowed idea for checking if side collision from
+    // https://stackoverflow.com/questions/8866389/java-gaming-collision-detection-side-collision-with-rectangles
     private boolean isSideCollision(Node stationaryNode, Ball ball) {
         return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() && stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY();
     }
