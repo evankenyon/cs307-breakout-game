@@ -3,6 +3,9 @@ package breakout;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -51,7 +54,8 @@ public class Breakout extends Application {
     private Ball ball;
     private Bricks bricks;
     private Label scoreDisplay;
-    private int lives;
+    private Label livesDisplay;
+    private IntegerProperty lives;
     Stage primaryStage;
     Group primaryRoot;
 
@@ -64,7 +68,6 @@ public class Breakout extends Application {
         mainScene = setupGame(SIZE, SIZE, BACKGROUND);
         gameOverScene = setupTextScene(SIZE, SIZE, BACKGROUND, "Game Over");
         winScene = setupTextScene(SIZE, SIZE, BACKGROUND, "You win!");
-        lives = 3;
         primaryStage = stage;
         primaryStage.setScene(mainScene);
         primaryStage.setTitle(TITLE);
@@ -80,10 +83,12 @@ public class Breakout extends Application {
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
         bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
-        setupScoreDisplay();
+        lives = new SimpleIntegerProperty(3);
+        scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), 600);
+        livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), 650);
 
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(paddle, ball, bricks, scoreDisplay);
+        Group root = new Group(paddle, ball, bricks, scoreDisplay, livesDisplay);
         primaryRoot = root;
         return setupScene(root, width, height, background);
     }
@@ -106,14 +111,16 @@ public class Breakout extends Application {
     }
 
     // Label setup code was borrowed from https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
-    private void setupScoreDisplay() {
-        scoreDisplay = new Label();
-        scoreDisplay.setFont(new Font("Verdana",30));
+    private Label setupDynamicDataDisplay(String text, StringBinding data, double yVal) {
+        Label display = new Label();
+        display.setFont(new Font("Verdana",30));
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
-        scoreDisplay.textProperty().bind(new SimpleStringProperty("Score: ").concat(bricks.getScore().asString()));
-        scoreDisplay.setLayoutX(50);
-        scoreDisplay.setLayoutY(700);
+        display.textProperty().bind(new SimpleStringProperty(text).concat(data));
+//        bricks.getScore().asString()
+        display.setLayoutX(50);
+        display.setLayoutY(yVal);
+        return display;
     }
 
     private void step (double elapsedTime) {
@@ -161,8 +168,8 @@ public class Breakout extends Application {
     }
 
     private void handleLifeDecrement() {
-        lives--;
-        if(lives == 0) {
+        lives.set(lives.get() -1);
+        if(lives.get() == 0) {
             primaryStage.setScene(gameOverScene);
         }
     }
