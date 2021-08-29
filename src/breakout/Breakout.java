@@ -75,7 +75,7 @@ public class Breakout extends Application {
         // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, 60, 60, 0.1);
+        bricks = new Bricks(SIZE, SIZE, 100, 100, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks);
         primaryRoot = root;
@@ -189,7 +189,7 @@ public class Breakout extends Application {
 
     private void handleNoBricksRemaining() {
         if(!bricks.isBrickRemaining()) {
-            
+            primaryStage.setScene(winScene);
         }
     }
 }
