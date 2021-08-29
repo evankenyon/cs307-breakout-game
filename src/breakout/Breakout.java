@@ -147,13 +147,13 @@ public class Breakout extends Application {
     private void handleBallIntersectingBounds() {
         if(ball.getCenterX() - BALL_RADIUS <= 0) {
             ball.setCenterX(BALL_RADIUS);
-            ball.setSpeedX(-ball.getSpeedX());
+            ball.reverseSpeedX();
         } else if (ball.getCenterX() + BALL_RADIUS >= mainScene.getWidth()) {
             ball.setCenterX(mainScene.getWidth() - BALL_RADIUS);
-            ball.setSpeedX(-ball.getSpeedX());
+            ball.reverseSpeedX();
         } else if (ball.getCenterY() - BALL_RADIUS <= 0) {
             ball.setCenterY(BALL_RADIUS);
-            ball.setSpeedY(-ball.getSpeedY());
+            ball.reverseSpeedY();
         } else if (ball.getCenterY() >= mainScene.getHeight()) {
             ball.resetPosition();
             handleLifeDecrement();
@@ -182,7 +182,7 @@ public class Breakout extends Application {
 
     private void handleBallIntersectingPaddle() {
         if(isIntersecting(paddle, ball)) {
-            ball.setSpeedY(-ball.getSpeedY());
+            ball.reverseSpeedY();
             ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
         }
     }
@@ -193,9 +193,9 @@ public class Breakout extends Application {
             primaryRoot.getChildren().remove(intersectedBrick);
             mainScene.setRoot(primaryRoot);
             if(isSideCollision(intersectedBrick, ball)) {
-                ball.setSpeedX(-ball.getSpeedX());
+                ball.reverseSpeedX();
             } else {
-                ball.setSpeedY(-ball.getSpeedY());
+                ball.reverseSpeedY();
             }
         }
     }

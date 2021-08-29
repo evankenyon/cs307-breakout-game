@@ -30,7 +30,6 @@ public class Bricks extends Group {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
         blockedY = new ArrayList<Integer>();
-
         score = new SimpleIntegerProperty(0);
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
