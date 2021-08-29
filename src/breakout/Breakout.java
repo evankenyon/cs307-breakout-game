@@ -38,7 +38,7 @@ public class Breakout extends Application {
     public static final double PADDLE_HEIGHT = 20;
     public static final double BALL_CENTER_X = 200;
     public static final double BALL_CENTER_Y = 140;
-    public static final double BALL_RADIUS = 8;
+    public static final double BALL_RADIUS = 15;
     public static final Paint PADDLE_COLOR = Color.BISQUE;
 
     private Scene mainScene;
@@ -73,7 +73,7 @@ public class Breakout extends Application {
         // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, 20, 20, 0.1);
+        bricks = new Bricks(SIZE, SIZE, 40, 40, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks);
         primaryRoot = root;
@@ -98,12 +98,12 @@ public class Breakout extends Application {
     }
 
     private void step (double elapsedTime) {
-        handlePaddleIntersectingBounds(paddle);
-        handleBallIntersectingBounds(ball);
-        updateBallPosition(ball, elapsedTime);
-        if(isIntersecting(paddle, ball)) {
-            ball.setSpeedY(-ball.getSpeedY());
-        }
+        handlePaddleIntersectingBounds();
+        handleBallIntersectingBounds();
+        handleBallIntersectingPaddle();
+        updateBallPosition(elapsedTime);
+
+
 
         Node intersectedBrick = bricks.getBrickIntersecting(ball);
         if(intersectedBrick != null) {
@@ -140,21 +140,7 @@ public class Breakout extends Application {
         return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() && stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY();
     }
 
-//    private boolean isTopCollision(Node stationaryNode, Ball ball) {
-//        System.out.print("Top of brick: ");
-//        System.out.println(stationaryNode.getBoundsInParent().getMinY());
-//        System.out.print("Bottom of ball: ");
-//        System.out.println(ball.getBoundsInParent().getMaxY());
-//        return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() + ball.getRadius();
-//    }
-//
-//    private boolean isBottomCollision(Node stationaryNode, Ball ball) {
-//        System.out.print("Bottom Collision: ");
-//        System.out.println(stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY() - ball.getRadius());
-//        return stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY() - ball.getRadius();
-//    }
-
-    private void handleBallIntersectingBounds(Ball ball) {
+    private void handleBallIntersectingBounds() {
         if(ball.getCenterX() - BALL_RADIUS <= 0) {
             ball.setCenterX(BALL_RADIUS);
             ball.setSpeedX(-ball.getSpeedX());
@@ -177,16 +163,23 @@ public class Breakout extends Application {
         }
     }
 
-    private void updateBallPosition(Ball ball, double elapsedTime) {
+    private void updateBallPosition(double elapsedTime) {
         ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
         ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
     }
 
-    private void handlePaddleIntersectingBounds(Rectangle paddle) {
+    private void handlePaddleIntersectingBounds() {
         if(paddle.getX() <= 0) {
             paddle.setX(0);
         } else if (paddle.getX() + PADDLE_WIDTH >= mainScene.getWidth()) {
             paddle.setX(mainScene.getWidth() - PADDLE_WIDTH);
+        }
+    }
+
+    private void handleBallIntersectingPaddle() {
+        if(isIntersecting(paddle, ball)) {
+            ball.setSpeedY(-ball.getSpeedY());
+            ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
         }
     }
 }

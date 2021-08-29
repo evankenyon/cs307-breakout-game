@@ -27,6 +27,7 @@ public class Ball extends Circle {
 
     public void setSpeedX(double speedX) {
         this.speedX = speedX;
+        angle = Math.atan2(speedY, this.speedX);
     }
 
     public double getSpeedY() {
@@ -35,6 +36,15 @@ public class Ball extends Circle {
 
     public void setSpeedY(double speedY) {
         this.speedY = speedY;
+        angle = Math.atan2(this.speedY, speedX);
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+    public void setAngle(double angle) {
+        this.angle = angle;
+        setSpeed();
     }
 
     public void resetPosition() {
@@ -43,10 +53,19 @@ public class Ball extends Circle {
         randomizeSpeed();
     }
 
-    private void randomizeSpeed() {
+    private void randomizeAngle() {
         angle = rand.nextDouble() * 2 * Math.PI;
+    }
+
+    private void setSpeed() {
         speedX = 300*Math.cos(angle);
         speedY = 300*Math.sin(angle);
     }
+
+    private void randomizeSpeed() {
+        randomizeAngle();
+        setSpeed();
+    }
+
 
 }
