@@ -1,5 +1,7 @@
 package breakout;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
@@ -11,7 +13,8 @@ import java.util.Random;
 
 public class Bricks extends Group {
 
-//    private int size;
+    // Integer Property code for score in this class was borrowed from
+    // https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
     private Random rand;
     private ArrayList<Integer> blockedX;
     private ArrayList<Integer> blockedY;
@@ -19,14 +22,15 @@ public class Bricks extends Group {
     private int brickHeight;
     private int sceneWidth;
     private int sceneHeight;
-    private int score;
+    private IntegerProperty score;
     private double frequency;
 
     public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double frequency) {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
         blockedY = new ArrayList<Integer>();
-        score = 0;
+
+        score = new SimpleIntegerProperty(0);
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
         this.sceneWidth = sceneWidth;
@@ -72,7 +76,7 @@ public class Bricks extends Group {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
                 Node oldBrick = brick;
                 getChildren().remove(brick);
-                score++;
+                score.set(score.get() + 1);
                 return oldBrick;
             }
         }
@@ -81,5 +85,9 @@ public class Bricks extends Group {
 
     public boolean isBrickRemaining() {
         return getChildren().size() != 0;
+    }
+
+    public IntegerProperty getScore() {
+        return score;
     }
 }

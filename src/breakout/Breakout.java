@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -38,7 +39,8 @@ public class Breakout extends Application {
     public static final double PADDLE_HEIGHT = 20;
     public static final double BALL_CENTER_X = 200;
     public static final double BALL_CENTER_Y = 140;
-    public static final double BALL_RADIUS = 15;
+    public static final int BRICK_SIZE = 25;
+    public static final double BALL_RADIUS = BRICK_SIZE / 2.5;
     public static final Paint PADDLE_COLOR = Color.BISQUE;
 
     private Scene mainScene;
@@ -47,6 +49,7 @@ public class Breakout extends Application {
     private Rectangle paddle;
     private Ball ball;
     private Bricks bricks;
+    private Label scoreDisplay;
     private int lives;
     Stage primaryStage;
     Group primaryRoot;
@@ -60,6 +63,7 @@ public class Breakout extends Application {
         mainScene = setupGame(SIZE, SIZE, BACKGROUND);
         gameOverScene = setupTextScene(SIZE, SIZE, BACKGROUND, "Game Over");
         winScene = setupTextScene(SIZE, SIZE, BACKGROUND, "You win!");
+
         lives = 3;
         primaryStage = stage;
         primaryStage.setScene(mainScene);
@@ -75,9 +79,15 @@ public class Breakout extends Application {
         // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, 100, 100, 0.1);
+        bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
+        // Label setup code was borrowed
+        scoreDisplay = new Label();
+        scoreDisplay.setFont(new Font("Verdana",30));
+        scoreDisplay.textProperty().bind(bricks.getScore().asString());
+        scoreDisplay.setLayoutX(50);
+        scoreDisplay.setLayoutY(700);
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(paddle, ball, bricks);
+        Group root = new Group(paddle, ball, bricks, scoreDisplay);
         primaryRoot = root;
         return setupScene(root, width, height, background);
     }
@@ -85,7 +95,7 @@ public class Breakout extends Application {
     private Scene setupTextScene(int width, int height, Paint background, String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
         Text text = new Text(message);
-        text.setFont(Font.font ("Verdana", 20));
+        text.setFont(Font.font ("Verdana", 30));
         text.setX(50);
         text.setY(50);
         // All of the below was borrowed from example_animation in course gitlab
