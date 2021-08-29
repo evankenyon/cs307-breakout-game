@@ -4,6 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import org.w3c.dom.css.Rect;
@@ -65,7 +66,12 @@ public class Bricks extends Group {
         for(int x = 0; x <= sceneWidth; x += brickWidth + 1) {
             for(int y = 0; y <= sceneHeight/2; y += brickHeight + 1) {
                 if(! (blockedX.contains(x) || blockedY.contains(y))) {
-                    getChildren().add(new Rectangle(x, y, brickWidth, brickHeight));
+                    Rectangle newBrick = new Rectangle(x, y, brickWidth, brickHeight);
+                    // Made range for colors 0.1 to 1.0 instead of generic 0.0 to 1.0 so that bricks wouldn't be hard to see
+                    // Based off of random color generator found at
+                    // https://stackoverflow.com/questions/35715283/set-text-to-random-color-opacity-javafx/35715848
+                    newBrick.setFill(Color.color((Math.random() * 0.9) + 0.1, (Math.random() * 0.9) + 0.1, (Math.random() * 0.9) + 0.1));
+                    getChildren().add(newBrick);
                 }
             }
         }
