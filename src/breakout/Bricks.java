@@ -19,12 +19,14 @@ public class Bricks extends Group {
     private int brickHeight;
     private int sceneWidth;
     private int sceneHeight;
+    private int score;
     private double frequency;
 
     public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double frequency) {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
         blockedY = new ArrayList<Integer>();
+        score = 0;
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
         this.sceneWidth = sceneWidth;
@@ -70,10 +72,14 @@ public class Bricks extends Group {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
                 Node oldBrick = brick;
                 getChildren().remove(brick);
+                score++;
                 return oldBrick;
             }
         }
         return null;
     }
 
+    public boolean isBrickRemaining() {
+        return getChildren().size() != 0;
+    }
 }

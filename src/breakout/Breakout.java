@@ -43,6 +43,7 @@ public class Breakout extends Application {
 
     private Scene mainScene;
     private Scene gameOverScene;
+    private Scene winScene;
     private Rectangle paddle;
     private Ball ball;
     private Bricks bricks;
@@ -57,7 +58,8 @@ public class Breakout extends Application {
     @Override
     public void start (Stage stage) {
         mainScene = setupGame(SIZE, SIZE, BACKGROUND);
-        gameOverScene = setupGameOver(SIZE, SIZE, BACKGROUND);
+        gameOverScene = setupTextScene(SIZE, SIZE, BACKGROUND, "Game Over");
+        winScene = setupTextScene(SIZE, SIZE, BACKGROUND, "You win!");
         lives = 3;
         primaryStage = stage;
         primaryStage.setScene(mainScene);
@@ -73,21 +75,21 @@ public class Breakout extends Application {
         // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
         ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, 40, 40, 0.1);
+        bricks = new Bricks(SIZE, SIZE, 60, 60, 0.1);
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks);
         primaryRoot = root;
         return setupScene(root, width, height, background);
     }
 
-    private Scene setupGameOver(int width, int height, Paint background) {
+    private Scene setupTextScene(int width, int height, Paint background, String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-        Text gameOver = new Text("Game Over");
-        gameOver.setFont(Font.font ("Verdana", 20));
-        gameOver.setX(50);
-        gameOver.setY(50);
+        Text text = new Text(message);
+        text.setFont(Font.font ("Verdana", 20));
+        text.setX(50);
+        text.setY(50);
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(gameOver);
+        Group root = new Group(text);
         return setupScene(root, width, height, background);
     }
 
@@ -102,19 +104,8 @@ public class Breakout extends Application {
         handleBallIntersectingBounds();
         handleBallIntersectingPaddle();
         updateBallPosition(elapsedTime);
-
-
-
-        Node intersectedBrick = bricks.getBrickIntersecting(ball);
-        if(intersectedBrick != null) {
-            primaryRoot.getChildren().remove(intersectedBrick);
-            mainScene.setRoot(primaryRoot);
-            if(isSideCollision(intersectedBrick, ball)) {
-                ball.setSpeedX(-ball.getSpeedX());
-            } else {
-                ball.setSpeedY(-ball.getSpeedY());
-            }
-        }
+        handleBallIntersectingBrick();
+        handleNoBricksRemaining();
     }
 
     // Borrowed from example_animation in course gitlab
@@ -180,6 +171,25 @@ public class Breakout extends Application {
         if(isIntersecting(paddle, ball)) {
             ball.setSpeedY(-ball.getSpeedY());
             ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
+        }
+    }
+
+    private void handleBallIntersectingBrick() {
+        Node intersectedBrick = bricks.getBrickIntersecting(ball);
+        if(intersectedBrick != null) {
+            primaryRoot.getChildren().remove(intersectedBrick);
+            mainScene.setRoot(primaryRoot);
+            if(isSideCollision(intersectedBrick, ball)) {
+                ball.setSpeedX(-ball.getSpeedX());
+            } else {
+                ball.setSpeedY(-ball.getSpeedY());
+            }
+        }
+    }
+
+    private void handleNoBricksRemaining() {
+        if(!bricks.isBrickRemaining()) {
+            
         }
     }
 }
