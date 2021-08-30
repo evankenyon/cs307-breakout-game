@@ -24,9 +24,9 @@ public class Bricks extends Group {
     private int sceneWidth;
     private int sceneHeight;
     private IntegerProperty score;
-    private double frequency;
+    private double blockedRowOrColFreq;
 
-    public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double frequency) {
+    public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double blockedRowOrColFreq) {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
         blockedY = new ArrayList<Integer>();
@@ -35,7 +35,7 @@ public class Bricks extends Group {
         this.brickHeight = brickHeight;
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
-        this.frequency = frequency;
+        this.blockedRowOrColFreq = blockedRowOrColFreq;
         addBlockedCoordinates();
         generateBricks();
     }
@@ -47,7 +47,7 @@ public class Bricks extends Group {
 
     private void addBlockedXCoordinates() {
         for(int x = 0; x <= sceneWidth; x += brickWidth + 1) {
-            if(rand.nextDouble() <= frequency) {
+            if(rand.nextDouble() <= blockedRowOrColFreq) {
                 blockedX.add(x);
             }
         }
@@ -55,7 +55,7 @@ public class Bricks extends Group {
 
     private void addBlockedYCoordinates() {
         for(int y = 0; y <= sceneHeight/2; y += brickHeight + 1) {
-            if(rand.nextDouble() <= frequency) {
+            if(rand.nextDouble() <= blockedRowOrColFreq) {
                 blockedY.add(y);
             }
         }

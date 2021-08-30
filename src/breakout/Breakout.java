@@ -35,17 +35,19 @@ public class Breakout extends Application {
     public static final int FRAMES_PER_SECOND = 60;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final Paint BACKGROUND = Color.AZURE;
-    public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final int OFFSET_PADDLE_AMOUNT = 50;
     public static final int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
     public static final int PADDLE_SPEED = 25;
     public static final double PADDLE_WIDTH = 100;
     public static final double PADDLE_HEIGHT = 20;
-    public static final double BALL_CENTER_X = 200;
-    public static final double BALL_CENTER_Y = 140;
     public static final int BRICK_SIZE = 25;
     public static final double BALL_RADIUS = BRICK_SIZE / 2.5;
-    public static final Paint PADDLE_COLOR = Color.BISQUE;
+    public static final double DISPLAY_X_POS = 50;
+    public static final double SCORE_DISPLAY_Y_POS = 600;
+    public static final double END_MESSAGE_X_POS = 50;
+    public static final double END_MESSAGE_Y_POS = 50;
+    public static final int FONT_SIZE = 30;
+    public static final String FONT_TYPE = "Verdana";
 
     private Scene mainScene;
     private Scene gameOverScene;
@@ -53,11 +55,11 @@ public class Breakout extends Application {
     private Rectangle paddle;
     private Ball ball;
     private Bricks bricks;
-    private Label scoreDisplay;
-    private Label livesDisplay;
+    private int delayIntersectionFrames;
     private IntegerProperty lives;
     Stage primaryStage;
     Group primaryRoot;
+
 
 
     /**
@@ -65,47 +67,33 @@ public class Breakout extends Application {
      */
     @Override
     public void start (Stage stage) {
-        mainScene = setupGame(SIZE, SIZE, BACKGROUND);
-        gameOverScene = setupTextScene(SIZE, SIZE, BACKGROUND, "Game Over");
-        winScene = setupTextScene(SIZE, SIZE, BACKGROUND, "You win!");
-        primaryStage = stage;
-        primaryStage.setScene(mainScene);
-        primaryStage.setTitle(TITLE);
-        primaryStage.show();
-        Timeline animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> step(SECOND_DELAY)));
-        animation.play();
+        setupAllScenes();
+        setupPrimaryStage(stage);
+        setupTimeline();
     }
 
-    private Scene setupGame (int width, int height, Paint background) {
-        // Rectangle constructor parameters from example_animation in course gitlab
-        paddle = new Rectangle(width / 2 - PADDLE_WIDTH / 2, height - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
-        ball = new Ball(width/2, height - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
-        lives = new SimpleIntegerProperty(3);
-        scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), 600);
-        livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), 650);
-
+    private Scene setupGame() {
+        setupMainSceneNodes();
+        Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), SCORE_DISPLAY_Y_POS);
+        Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), SCORE_DISPLAY_Y_POS + 50);
+        delayIntersectionFrames = 2;
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks, scoreDisplay, livesDisplay);
         primaryRoot = root;
-        return setupScene(root, width, height, background);
+        return setupScene(root);
     }
 
-    private Scene setupTextScene(int width, int height, Paint background, String message) {
+    private Scene setupTextScene(String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-        Text text = new Text(message);
-        text.setFont(Font.font ("Verdana", 30));
-        text.setX(50);
-        text.setY(50);
+        Text text = new Text(END_MESSAGE_X_POS, END_MESSAGE_Y_POS, message);
+        text.setFont(Font.font (FONT_TYPE, FONT_SIZE));
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(text);
-        return setupScene(root, width, height, background);
+        return setupScene(root);
     }
 
-    private Scene setupScene(Group root, int width, int height, Paint background) {
-        Scene scene = new Scene(root, width, height, background);
+    private Scene setupScene(Group root) {
+        Scene scene = new Scene(root, SIZE, SIZE, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
     }
@@ -113,22 +101,20 @@ public class Breakout extends Application {
     // Label setup code was borrowed from https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
     private Label setupDynamicDataDisplay(String text, StringBinding data, double yVal) {
         Label display = new Label();
-        display.setFont(new Font("Verdana",30));
+        display.setFont(new Font(FONT_TYPE,FONT_SIZE));
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
 //        bricks.getScore().asString()
-        display.setLayoutX(50);
+        display.setLayoutX(DISPLAY_X_POS);
         display.setLayoutY(yVal);
         return display;
     }
 
     private void step (double elapsedTime) {
-        handlePaddleIntersectingBounds();
-        handleBallIntersectingBounds();
-        handleBallIntersectingPaddle();
+        handleDelayingIntersectionFrames();
+        handleIntersections();
         updateBallPosition(elapsedTime);
-        handleBallIntersectingBrick();
         handleNoBricksRemaining();
     }
 
@@ -188,7 +174,7 @@ public class Breakout extends Application {
     }
 
     private void handleBallIntersectingPaddle() {
-        if(isIntersecting(paddle, ball)) {
+        if(isIntersecting(paddle, ball) && delayIntersectionFrames == 2) {
             ball.reverseSpeedY();
             ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
         }
@@ -211,5 +197,47 @@ public class Breakout extends Application {
         if(!bricks.isBrickRemaining()) {
             primaryStage.setScene(winScene);
         }
+    }
+
+    private void setupPrimaryStage(Stage stage) {
+        primaryStage = stage;
+        primaryStage.setScene(mainScene);
+        primaryStage.setTitle(TITLE);
+        primaryStage.show();
+    }
+
+    private void setupAllScenes() {
+        mainScene = setupGame();
+        gameOverScene = setupTextScene("Game Over");
+        winScene = setupTextScene("You win!");
+    }
+
+    private void setupTimeline() {
+        Timeline animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> step(SECOND_DELAY)));
+        animation.play();
+    }
+
+    private void setupMainSceneNodes() {
+        // Rectangle constructor parameters from example_animation in course gitlab
+        paddle = new Rectangle(SIZE / 2 - PADDLE_WIDTH / 2, SIZE - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
+        ball = new Ball(SIZE/2, SIZE - OFFSET_BALL_AMOUNT, BALL_RADIUS);
+        bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
+        lives = new SimpleIntegerProperty(3);
+    }
+
+    private void handleDelayingIntersectionFrames() {
+        delayIntersectionFrames--;
+        if(delayIntersectionFrames == 0) {
+            delayIntersectionFrames = 2;
+        }
+    }
+
+    private void handleIntersections() {
+        handlePaddleIntersectingBounds();
+        handleBallIntersectingBounds();
+        handleBallIntersectingPaddle();
+        handleBallIntersectingBrick();
     }
 }

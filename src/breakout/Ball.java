@@ -50,6 +50,7 @@ public class Ball extends Circle {
     public double getAngle() {
         return angle;
     }
+
     public void setAngle(double angle) {
         this.angle = angle;
         setSpeed();
@@ -62,7 +63,9 @@ public class Ball extends Circle {
     }
 
     private void randomizeAngle() {
-        angle = rand.nextDouble() * Math.PI;
+        // Set the range to pi/6 through pi instead of 0 through pi to make
+        // sure that the angle isn't so small that the ball is barely moving vertically
+        angle = (rand.nextDouble() * (5*Math.PI)/6) + Math.PI/6;
     }
 
     private void setSpeed() {
