@@ -3,15 +3,32 @@ package breakout;
 import javafx.scene.shape.Circle;
 import java.util.Random;
 
+/**
+ * Purpose:
+ * Assumptions:
+ * Dependencies:
+ * Example:
+ * Other details:
+ *
+ * @author Evan Kenyon
+ */
 public class Ball extends Circle {
 
-    private double speedX;
-    private double speedY;
+    private double xVelocity;
+    private double yVelocity;
     private double angle;
     private Random rand;
     private double originalCenterX;
     private double originalCenterY;
 
+    /**
+     * Purpose: Construct a ball object which has the given dimensions desired
+     *  and call a helper method to give the ball an initial, random speed
+     * Assumptions:
+     * @param centerX the x value for the center of the ball
+     * @param centerY the y value for the center of the ball
+     * @param radius the radius of the ball
+     */
     public Ball(double centerX, double centerY, double radius) {
         super(centerX, centerY, radius);
         originalCenterX = centerX;
@@ -20,42 +37,83 @@ public class Ball extends Circle {
         randomizeSpeed();
     }
 
-
-    public double getSpeedX() {
-        return speedX;
+    /**
+     * Purpose: Return the current x velocity
+     * Assumptions: xVelocity is not null
+     * @return the current x velocity
+     */
+    public double getXVelocity() {
+        return xVelocity;
     }
 
-    public void setSpeedX(double speedX) {
-        this.speedX = speedX;
-        angle = Math.atan2(-speedY, this.speedX);
+    /**
+     * Purpose: Set this object's xVelocity
+     * Assumptions: the xVelocity parameter is not null
+     * @param xVelocity the value that this object's xVelocity is set to
+     */
+    public void setXVelocity(double xVelocity) {
+        this.xVelocity = xVelocity;
+        angle = Math.atan2(-yVelocity, this.xVelocity);
     }
 
-    public double getSpeedY() {
-        return speedY;
+    /**
+     * Purpose: Return the current y velocity
+     * Assumptions: yVelocity is not null
+     * @return the current y velocity
+     */
+    public double getYVelocity() {
+        return yVelocity;
     }
 
-    public void setSpeedY(double speedY) {
-        this.speedY = speedY;
-        angle = Math.atan2(-this.speedY, speedX);
+    /**
+     * Purpose: Set this object's yVelocity
+     * Assumptions: the yVelocity parameter is not null
+     * @param yVelocity the value that this object's yVelocity is set to
+     */
+    public void setYVelocity(double yVelocity) {
+        this.yVelocity = yVelocity;
+        angle = Math.atan2(-this.yVelocity, xVelocity);
     }
 
-    public void reverseSpeedY() {
-        setSpeedY(-speedY);
+    /**
+     * Purpose: Invert this object's yVelocity
+     * Assumptions: yVelocity is not null
+     */
+    public void reverseYVelocity() {
+        setYVelocity(-yVelocity);
     }
 
-    public void reverseSpeedX() {
-        setSpeedX(-speedX);
+    /**
+     * Purpose: Invert this object's xVelocity
+     * Assumptions: xVelocity is not null
+     */
+    public void reverseXVelocity() {
+        setXVelocity(-xVelocity);
     }
 
+    /**
+     * Purpose: Get this object's angle
+     * Assumptions: angle is not null
+     * @return this object's angle
+     */
     public double getAngle() {
         return angle;
     }
 
+    /**
+     * Purpose: Set this object's angle
+     * Assumptions: the angle parameter is not null
+     * @param angle the value to set this object's angle to
+     */
     public void setAngle(double angle) {
         this.angle = angle;
         setSpeed();
     }
 
+    /**
+     * Purpose: Reset the ball to its original position and set a new random starting speed
+     * Assumptions:
+     */
     public void resetPosition() {
         setCenterY(originalCenterY);
         setCenterX(originalCenterX);
@@ -69,8 +127,8 @@ public class Ball extends Circle {
     }
 
     private void setSpeed() {
-        speedX = 300*Math.cos(angle);
-        speedY = -300*Math.sin(angle);
+        xVelocity = 300*Math.cos(angle);
+        yVelocity = -300*Math.sin(angle);
     }
 
     private void randomizeSpeed() {

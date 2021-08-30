@@ -22,7 +22,13 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * FROM EXAMPLE_ANIMATION: A basic example JavaFX program for the first lab.
+ * Purpose: The purpose of this class is to setup a breakout game, and to update the different
+ * member objects and variables as necessary throughout the game (i.e. at each frame and at each
+ * key input)
+ * Assumptions:
+ * Dependencies: This class depends on several classes from the JavaFX platform.
+ * Example:
+ * Other details:
  *
  * @author Evan Kenyon
  */
@@ -61,9 +67,13 @@ public class Breakout extends Application {
     Group primaryRoot;
 
 
+//    Borrowed from example_animation in course gitlab
 
     /**
-     * Borrowed from example_animation in course gitlab
+     * Purpose: Start the game by calling helper methods which set up all the scenes,
+     * the primary stage, and the timeline
+     * Assumptions:
+     * @param stage the stage in which different scenes reside throughout the game
      */
     @Override
     public void start (Stage stage) {
@@ -105,7 +115,6 @@ public class Breakout extends Application {
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
-//        bricks.getScore().asString()
         display.setLayoutX(DISPLAY_X_POS);
         display.setLayoutY(yVal);
         return display;
@@ -140,13 +149,13 @@ public class Breakout extends Application {
     private void handleBallIntersectingBounds() {
         if(ball.getCenterX() - BALL_RADIUS <= 0) {
             ball.setCenterX(BALL_RADIUS);
-            ball.reverseSpeedX();
+            ball.reverseXVelocity();
         } else if (ball.getCenterX() + BALL_RADIUS >= mainScene.getWidth()) {
             ball.setCenterX(mainScene.getWidth() - BALL_RADIUS);
-            ball.reverseSpeedX();
+            ball.reverseXVelocity();
         } else if (ball.getCenterY() - BALL_RADIUS <= 0) {
             ball.setCenterY(BALL_RADIUS);
-            ball.reverseSpeedY();
+            ball.reverseYVelocity();
         } else if (ball.getCenterY() >= mainScene.getHeight()) {
             ball.resetPosition();
             handleLifeDecrement();
@@ -161,8 +170,8 @@ public class Breakout extends Application {
     }
 
     private void updateBallPosition(double elapsedTime) {
-        ball.setCenterX(ball.getCenterX() + ball.getSpeedX() * elapsedTime);
-        ball.setCenterY(ball.getCenterY() + ball.getSpeedY() * elapsedTime);
+        ball.setCenterX(ball.getCenterX() + ball.getXVelocity() * elapsedTime);
+        ball.setCenterY(ball.getCenterY() + ball.getYVelocity() * elapsedTime);
     }
 
     private void handlePaddleIntersectingBounds() {
@@ -175,7 +184,7 @@ public class Breakout extends Application {
 
     private void handleBallIntersectingPaddle() {
         if(isIntersecting(paddle, ball) && delayIntersectionFrames == 2) {
-            ball.reverseSpeedY();
+            ball.reverseYVelocity();
             ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
         }
     }
@@ -186,9 +195,9 @@ public class Breakout extends Application {
             primaryRoot.getChildren().remove(intersectedBrick);
             mainScene.setRoot(primaryRoot);
             if(isSideCollision(intersectedBrick, ball)) {
-                ball.reverseSpeedX();
+                ball.reverseXVelocity();
             } else {
-                ball.reverseSpeedY();
+                ball.reverseYVelocity();
             }
         }
     }

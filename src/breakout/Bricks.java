@@ -7,11 +7,19 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import org.w3c.dom.css.Rect;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Purpose:
+ * Assumptions:
+ * Dependencies:
+ * Example:
+ * Other details:
+ *
+ * @author Evan Kenyon
+ */
 public class Bricks extends Group {
 
     // Integer Property code for score in this class was borrowed from
@@ -26,6 +34,16 @@ public class Bricks extends Group {
     private IntegerProperty score;
     private double blockedRowOrColFreq;
 
+    /**
+     * Purpose: Construct a Bricks object which has the number of bricks (Rectangles) of size brickWidth x brickHeight
+     * that fit into a sceneWidth x sceneHeight/2 area, with roughly blockRowOrColFreq of the rows/columns empty
+     * Assumptions:
+     * @param sceneWidth scene width, used so that bricks aren't generated outside of scene
+     * @param sceneHeight scene height, used so that bricks aren't generated outside of scene
+     * @param brickWidth width of each brick
+     * @param brickHeight height of each brick
+     * @param blockedRowOrColFreq frequency of a row or column being empty
+     */
     public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double blockedRowOrColFreq) {
         rand = new Random();
         blockedX = new ArrayList<Integer>();
@@ -76,6 +94,12 @@ public class Bricks extends Group {
         }
     }
 
+    /**
+     * Purpose: See if a shape is intersecting with a brick
+     * Assumptions: shape is not null, shape is in the same scene as a brick, shape could conceivably intersect with a brick
+     * @param shape the shape which is checked to see if its intersecting with a brick
+     * @return
+     */
     public Node getBrickIntersecting(Shape shape) {
         for(Node brick : getChildren()) {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
@@ -88,10 +112,20 @@ public class Bricks extends Group {
         return null;
     }
 
+    /**
+     * Purpose: Check if any bricks haven't been hit by the ball yet
+     * Assumptions:
+     * @return true if all bricks have been hit by the ball, false otherwise
+     */
     public boolean isBrickRemaining() {
         return getChildren().size() != 0;
     }
 
+    /**
+     * Purpose: Return the number of bricks already hit by the ball
+     * Assumptions: score is not null
+     * @return the number of bricks already hit by the ball
+     */
     public IntegerProperty getScore() {
         return score;
     }
