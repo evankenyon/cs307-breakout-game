@@ -20,6 +20,7 @@ public class Ball extends Circle {
     private Random rand;
     private double originalCenterX;
     private double originalCenterY;
+    private boolean isMoving;
 
     /**
      * Purpose: Construct a ball object which has the given dimensions desired
@@ -33,6 +34,7 @@ public class Ball extends Circle {
         super(centerX, centerY, radius);
         originalCenterX = centerX;
         originalCenterY = centerY;
+        isMoving = false;
         rand = new Random();
         randomizeSpeed();
     }
@@ -43,12 +45,12 @@ public class Ball extends Circle {
      * @return the current x velocity
      */
     public double getXVelocity() {
-        return xVelocity;
+        return isMoving ? xVelocity : 0;
     }
 
     /**
      * Purpose: Set this object's xVelocity
-     * Assumptions: the xVelocity parameter is not null
+     * Assumptions: the xVelocity argument provided is not null
      * @param xVelocity the value that this object's xVelocity is set to
      */
     public void setXVelocity(double xVelocity) {
@@ -62,12 +64,12 @@ public class Ball extends Circle {
      * @return the current y velocity
      */
     public double getYVelocity() {
-        return yVelocity;
+        return isMoving ? yVelocity : 0;
     }
 
     /**
      * Purpose: Set this object's yVelocity
-     * Assumptions: the yVelocity parameter is not null
+     * Assumptions: the yVelocity argument provided is not null
      * @param yVelocity the value that this object's yVelocity is set to
      */
     public void setYVelocity(double yVelocity) {
@@ -102,7 +104,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Set this object's angle
-     * Assumptions: the angle parameter is not null
+     * Assumptions: the angle argument provided is not null
      * @param angle the value to set this object's angle to
      */
     public void setAngle(double angle) {
@@ -136,5 +138,13 @@ public class Ball extends Circle {
         setSpeed();
     }
 
-
+    /**
+     * Purpose: Set whether this ball is currently moving
+     * Assumptions: the isMoving argument provided is not null
+     * @param isMoving the boolean to set this object's isMoving variable to
+     *                 (which determines if the ball is currently moving or not)
+     */
+    public void setIsMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
 }

@@ -34,26 +34,15 @@ import javafx.util.Duration;
  */
 public class Breakout extends Application {
 
-    // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
-    // borrowed from example_animation in course gitlab
-    public static final String TITLE = "Breakout Game";
-    public static final int SIZE = 800;
-    public static final int FRAMES_PER_SECOND = 60;
-    public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    public static final Paint BACKGROUND = Color.AZURE;
-    public static final int OFFSET_PADDLE_AMOUNT = 50;
-    public static final int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
-    public static final int PADDLE_SPEED = 25;
-    public static final double PADDLE_WIDTH = 100;
-    public static final double PADDLE_HEIGHT = 20;
-    public static final int BRICK_SIZE = 25;
-    public static final double BALL_RADIUS = BRICK_SIZE / 2.5;
-    public static final double DISPLAY_X_POS = 50;
-    public static final double SCORE_DISPLAY_Y_POS = 600;
-    public static final double END_MESSAGE_X_POS = 50;
-    public static final double END_MESSAGE_Y_POS = 50;
-    public static final int FONT_SIZE = 30;
-    public static final String FONT_TYPE = "Verdana";
+    private final int SIZE = 800;
+    private final int FRAMES_PER_SECOND = 60;
+    private final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
+    private final Paint BACKGROUND = Color.AZURE;
+    private final double PADDLE_WIDTH = 100;
+    private final int BRICK_SIZE = 25;
+    private final double BALL_RADIUS = BRICK_SIZE / 2.5;
+    private final int FONT_SIZE = 30;
+    private final String FONT_TYPE = "Verdana";
 
     private Scene mainScene;
     private Scene gameOverScene;
@@ -84,6 +73,7 @@ public class Breakout extends Application {
 
     private Scene setupGame() {
         setupMainSceneNodes();
+        double SCORE_DISPLAY_Y_POS = 600;
         Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), SCORE_DISPLAY_Y_POS);
         Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), SCORE_DISPLAY_Y_POS + 50);
         delayIntersectionFrames = 2;
@@ -95,6 +85,8 @@ public class Breakout extends Application {
 
     private Scene setupTextScene(String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+        double END_MESSAGE_X_POS = 50;
+        double END_MESSAGE_Y_POS = 50;
         Text text = new Text(END_MESSAGE_X_POS, END_MESSAGE_Y_POS, message);
         text.setFont(Font.font (FONT_TYPE, FONT_SIZE));
         // All of the below was borrowed from example_animation in course gitlab
@@ -115,6 +107,7 @@ public class Breakout extends Application {
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
+        double DISPLAY_X_POS = 50;
         display.setLayoutX(DISPLAY_X_POS);
         display.setLayoutY(yVal);
         return display;
@@ -129,9 +122,11 @@ public class Breakout extends Application {
 
     // Borrowed from example_animation in course gitlab
     private void handleKeyInput (KeyCode code) {
+        int PADDLE_SPEED = 25;
         switch (code) {
             case RIGHT -> paddle.setX(paddle.getX() + PADDLE_SPEED);
             case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
+            case SPACE -> ball.setIsMoving(true);
         }
     }
 
@@ -164,6 +159,7 @@ public class Breakout extends Application {
 
     private void handleLifeDecrement() {
         lives.set(lives.get() -1);
+        ball.setIsMoving(false);
         if(lives.get() == 0) {
             primaryStage.setScene(gameOverScene);
         }
@@ -183,9 +179,14 @@ public class Breakout extends Application {
     }
 
     private void handleBallIntersectingPaddle() {
-        if(isIntersecting(paddle, ball) && delayIntersectionFrames == 2) {
+        if (isIntersecting(paddle, ball) ) {
             ball.reverseYVelocity();
-            ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth()/2) - ball.getCenterX())));
+            if (isSideCollision(paddle, ball)) {
+                ball.reverseXVelocity();
+//                ball.reverseYVelocity();
+            } else if (delayIntersectionFrames == 2){
+                ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth() / 2) - ball.getCenterX())));
+            }
         }
     }
 
@@ -211,6 +212,9 @@ public class Breakout extends Application {
     private void setupPrimaryStage(Stage stage) {
         primaryStage = stage;
         primaryStage.setScene(mainScene);
+        // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
+        // borrowed from example_animation in course gitlab
+        String TITLE = "Breakout Game";
         primaryStage.setTitle(TITLE);
         primaryStage.show();
     }
@@ -230,7 +234,10 @@ public class Breakout extends Application {
 
     private void setupMainSceneNodes() {
         // Rectangle constructor parameters from example_animation in course gitlab
+        int OFFSET_PADDLE_AMOUNT = 50;
+        double PADDLE_HEIGHT = 20;
         paddle = new Rectangle(SIZE / 2 - PADDLE_WIDTH / 2, SIZE - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
+        int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
         ball = new Ball(SIZE/2, SIZE - OFFSET_BALL_AMOUNT, BALL_RADIUS);
         bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
         lives = new SimpleIntegerProperty(3);
@@ -249,4 +256,5 @@ public class Breakout extends Application {
         handleBallIntersectingPaddle();
         handleBallIntersectingBrick();
     }
+
 }
