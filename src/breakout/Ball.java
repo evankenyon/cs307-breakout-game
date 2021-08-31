@@ -4,11 +4,14 @@ import javafx.scene.shape.Circle;
 import java.util.Random;
 
 /**
- * Purpose:
- * Assumptions:
- * Dependencies:
- * Example:
- * Other details:
+ * Purpose: Create a ball in the Breakout class that is used to break bricks by bouncing it off of a paddle.
+ * Assumptions: JavaFX installed on device, values of vars do not push past practical limits
+ * (e.g. centerX and centerY values that would cause the ball to spawn off-screen)
+ * Dependencies: This class depends on several classes from the JavaFX platform and the Random class.
+ * Example: Construct a ball object with a reasonable radius and center point to be used in the Breakout class, which
+ * takes care of intersections with the borders of the scene (bounce off all except the bottom), bricks (destroys them),
+ * and the paddle (bounces off of it).
+ * Other details: note that the positive y direction is actually towards the bottom of the scene when manipulating the angle.
  *
  * @author Evan Kenyon
  */
@@ -25,7 +28,7 @@ public class Ball extends Circle {
     /**
      * Purpose: Construct a ball object which has the given dimensions desired
      *  and call a helper method to give the ball an initial, random speed
-     * Assumptions:
+     * Assumptions: centerX, centerY, and radius are set such that the ball spawns within the scene
      * @param centerX the x value for the center of the ball
      * @param centerY the y value for the center of the ball
      * @param radius the radius of the ball
@@ -41,7 +44,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Return the current x velocity
-     * Assumptions: xVelocity is not null
+     * Assumptions: none
      * @return the current x velocity
      */
     public double getXVelocity() {
@@ -50,7 +53,8 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Set this object's xVelocity
-     * Assumptions: the xVelocity argument provided is not null
+     * Assumptions: current angle value properly reflects actual angle of this ball's movement,
+     * the provided xVelocity argument is not null
      * @param xVelocity the value that this object's xVelocity is set to
      */
     public void setXVelocity(double xVelocity) {
@@ -60,7 +64,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Return the current y velocity
-     * Assumptions: yVelocity is not null
+     * Assumptions: none
      * @return the current y velocity
      */
     public double getYVelocity() {
@@ -69,7 +73,8 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Set this object's yVelocity
-     * Assumptions: the yVelocity argument provided is not null
+     * Assumptions: current angle value properly reflects actual angle of this ball's movement,
+     * the provided yVelocity argument is not null
      * @param yVelocity the value that this object's yVelocity is set to
      */
     public void setYVelocity(double yVelocity) {
@@ -79,7 +84,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Invert this object's yVelocity
-     * Assumptions: yVelocity is not null
+     * Assumptions: none
      */
     public void reverseYVelocity() {
         setYVelocity(-yVelocity);
@@ -87,7 +92,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Invert this object's xVelocity
-     * Assumptions: xVelocity is not null
+     * Assumptions: none
      */
     public void reverseXVelocity() {
         setXVelocity(-xVelocity);
@@ -95,7 +100,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Get this object's angle
-     * Assumptions: angle is not null
+     * Assumptions: none
      * @return this object's angle
      */
     public double getAngle() {
@@ -104,7 +109,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Set this object's angle
-     * Assumptions: the angle argument provided is not null
+     * Assumptions: the provided angle argument is not null
      * @param angle the value to set this object's angle to
      */
     public void setAngle(double angle) {
@@ -114,7 +119,7 @@ public class Ball extends Circle {
 
     /**
      * Purpose: Reset the ball to its original position and set a new random starting speed
-     * Assumptions:
+     * Assumptions: none
      */
     public void resetPosition() {
         setCenterY(originalCenterY);

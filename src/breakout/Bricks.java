@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -25,8 +26,8 @@ public class Bricks extends Group {
     // Integer Property code for score in this class was borrowed from
     // https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
     private Random rand;
-    private ArrayList<Integer> blockedX;
-    private ArrayList<Integer> blockedY;
+    private List<Integer> blockedX;
+    private List<Integer> blockedY;
     private int brickWidth;
     private int brickHeight;
     private int sceneWidth;
@@ -46,8 +47,8 @@ public class Bricks extends Group {
      */
     public Bricks(int sceneWidth, int sceneHeight, int brickWidth, int brickHeight, double blockedRowOrColFreq) {
         rand = new Random();
-        blockedX = new ArrayList<Integer>();
-        blockedY = new ArrayList<Integer>();
+        blockedX = new ArrayList<>();
+        blockedY = new ArrayList<>();
         score = new SimpleIntegerProperty(0);
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
@@ -96,7 +97,7 @@ public class Bricks extends Group {
 
     /**
      * Purpose: See if a shape is intersecting with a brick
-     * Assumptions: shape is not null, shape is in the same scene as a brick, shape could conceivably intersect with a brick
+     * Assumptions: shape is in the same scene as a brick, shape could conceivably intersect with a brick
      * @param shape the shape which is checked to see if its intersecting with a brick
      * @return
      */
@@ -114,7 +115,7 @@ public class Bricks extends Group {
 
     /**
      * Purpose: Check if any bricks haven't been hit by the ball yet
-     * Assumptions:
+     * Assumptions: none
      * @return true if all bricks have been hit by the ball, false otherwise
      */
     public boolean isBrickRemaining() {
@@ -123,7 +124,7 @@ public class Bricks extends Group {
 
     /**
      * Purpose: Return the number of bricks already hit by the ball
-     * Assumptions: score is not null
+     * Assumptions: none
      * @return the number of bricks already hit by the ball
      */
     public IntegerProperty getScore() {

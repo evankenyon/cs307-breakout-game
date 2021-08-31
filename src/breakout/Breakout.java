@@ -13,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -25,22 +24,19 @@ import javafx.util.Duration;
  * Purpose: The purpose of this class is to setup a breakout game, and to update the different
  * member objects and variables as necessary throughout the game (i.e. at each frame and at each
  * key input)
- * Assumptions:
- * Dependencies: This class depends on several classes from the JavaFX platform.
- * Example:
- * Other details:
+ * Assumptions: JavaFX installed on device, values of vars do not push past practical limits
+ * (e.g. SCENE_SIZE isn't set to a value larger than the device screen itself).
+ * Dependencies: This class depends on several classes from the JavaFX platform, the Ball claass, and the Bricks class.
+ * Example: Use this class to set up and manage objects involved in a breakout style video game.
+ * Specifically, running this class will do just that.
+ * Other details: Due to JavaFX syntax, a main method is not needed for running this class. The start
+ * method acts as its replacement.
  *
  * @author Evan Kenyon
  */
 public class Breakout extends Application {
 
-    private final int SIZE = 800;
-    private final int FRAMES_PER_SECOND = 60;
-    private final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    private final Paint BACKGROUND = Color.AZURE;
-    private final double PADDLE_WIDTH = 100;
-    private final int BRICK_SIZE = 25;
-    private final double BALL_RADIUS = BRICK_SIZE / 2.5;
+    private final int SCENE_SIZE = 800;
     private final int FONT_SIZE = 30;
     private final String FONT_TYPE = "Verdana";
 
@@ -56,12 +52,13 @@ public class Breakout extends Application {
     Group primaryRoot;
 
 
-//    Borrowed from example_animation in course gitlab
-
     /**
      * Purpose: Start the game by calling helper methods which set up all the scenes,
      * the primary stage, and the timeline
-     * Assumptions:
+     * Assumptions: JavaFX is installed on the device, set up scene methods are not changed in a way that
+     * would remove any key objects (ex. the bricks) from the game or in a way that would return an invalid/null
+     * Scene object, timeline method is not changed in such a way that would return an invalid/null timeline
+     * Attributions: The setup for this method was borrowed from example_animation in course gitlab
      * @param stage the stage in which different scenes reside throughout the game
      */
     @Override
@@ -73,9 +70,9 @@ public class Breakout extends Application {
 
     private Scene setupGame() {
         setupMainSceneNodes();
-        double SCORE_DISPLAY_Y_POS = 600;
-        Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), SCORE_DISPLAY_Y_POS);
-        Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), SCORE_DISPLAY_Y_POS + 50);
+        double scoreDisplayYPos = 600;
+        Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), scoreDisplayYPos);
+        Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), scoreDisplayYPos + 50);
         delayIntersectionFrames = 2;
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, bricks, scoreDisplay, livesDisplay);
@@ -85,9 +82,7 @@ public class Breakout extends Application {
 
     private Scene setupTextScene(String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-        double END_MESSAGE_X_POS = 50;
-        double END_MESSAGE_Y_POS = 50;
-        Text text = new Text(END_MESSAGE_X_POS, END_MESSAGE_Y_POS, message);
+        Text text = new Text(50, 50, message);
         text.setFont(Font.font (FONT_TYPE, FONT_SIZE));
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(text);
@@ -95,7 +90,7 @@ public class Breakout extends Application {
     }
 
     private Scene setupScene(Group root) {
-        Scene scene = new Scene(root, SIZE, SIZE, BACKGROUND);
+        Scene scene = new Scene(root, SCENE_SIZE, SCENE_SIZE, Color.AZURE);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
     }
@@ -103,12 +98,11 @@ public class Breakout extends Application {
     // Label setup code was borrowed from https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
     private Label setupDynamicDataDisplay(String text, StringBinding data, double yVal) {
         Label display = new Label();
-        display.setFont(new Font(FONT_TYPE,FONT_SIZE));
+        display.setFont(new Font(FONT_TYPE, FONT_SIZE));
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
-        double DISPLAY_X_POS = 50;
-        display.setLayoutX(DISPLAY_X_POS);
+        display.setLayoutX(50);
         display.setLayoutY(yVal);
         return display;
     }
@@ -122,10 +116,10 @@ public class Breakout extends Application {
 
     // Borrowed from example_animation in course gitlab
     private void handleKeyInput (KeyCode code) {
-        int PADDLE_SPEED = 25;
+        int paddleSpeed = 25;
         switch (code) {
-            case RIGHT -> paddle.setX(paddle.getX() + PADDLE_SPEED);
-            case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
+            case RIGHT -> paddle.setX(paddle.getX() + paddleSpeed);
+            case LEFT -> paddle.setX(paddle.getX() - paddleSpeed);
             case SPACE -> ball.setIsMoving(true);
         }
     }
@@ -142,14 +136,14 @@ public class Breakout extends Application {
     }
 
     private void handleBallIntersectingBounds() {
-        if(ball.getCenterX() - BALL_RADIUS <= 0) {
-            ball.setCenterX(BALL_RADIUS);
+        if(ball.getCenterX() - ball.getRadius() <= 0) {
+            ball.setCenterX(ball.getRadius());
             ball.reverseXVelocity();
-        } else if (ball.getCenterX() + BALL_RADIUS >= mainScene.getWidth()) {
-            ball.setCenterX(mainScene.getWidth() - BALL_RADIUS);
+        } else if (ball.getCenterX() + ball.getRadius() >= mainScene.getWidth()) {
+            ball.setCenterX(mainScene.getWidth() - ball.getRadius());
             ball.reverseXVelocity();
-        } else if (ball.getCenterY() - BALL_RADIUS <= 0) {
-            ball.setCenterY(BALL_RADIUS);
+        } else if (ball.getCenterY() - ball.getRadius() <= 0) {
+            ball.setCenterY(ball.getRadius());
             ball.reverseYVelocity();
         } else if (ball.getCenterY() >= mainScene.getHeight()) {
             ball.resetPosition();
@@ -173,8 +167,8 @@ public class Breakout extends Application {
     private void handlePaddleIntersectingBounds() {
         if(paddle.getX() <= 0) {
             paddle.setX(0);
-        } else if (paddle.getX() + PADDLE_WIDTH >= mainScene.getWidth()) {
-            paddle.setX(mainScene.getWidth() - PADDLE_WIDTH);
+        } else if (paddle.getX() + paddle.getWidth() >= mainScene.getWidth()) {
+            paddle.setX(mainScene.getWidth() - paddle.getWidth());
         }
     }
 
@@ -183,7 +177,6 @@ public class Breakout extends Application {
             ball.reverseYVelocity();
             if (isSideCollision(paddle, ball)) {
                 ball.reverseXVelocity();
-//                ball.reverseYVelocity();
             } else if (delayIntersectionFrames == 2){
                 ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth() / 2) - ball.getCenterX())));
             }
@@ -214,8 +207,8 @@ public class Breakout extends Application {
         primaryStage.setScene(mainScene);
         // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
         // borrowed from example_animation in course gitlab
-        String TITLE = "Breakout Game";
-        primaryStage.setTitle(TITLE);
+        String title = "Breakout Game";
+        primaryStage.setTitle(title);
         primaryStage.show();
     }
 
@@ -228,18 +221,21 @@ public class Breakout extends Application {
     private void setupTimeline() {
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> step(SECOND_DELAY)));
+        double secondDelay = 1.0 / 60;
+        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(secondDelay), e -> step(secondDelay)));
         animation.play();
     }
 
     private void setupMainSceneNodes() {
         // Rectangle constructor parameters from example_animation in course gitlab
-        int OFFSET_PADDLE_AMOUNT = 50;
-        double PADDLE_HEIGHT = 20;
-        paddle = new Rectangle(SIZE / 2 - PADDLE_WIDTH / 2, SIZE - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
-        int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
-        ball = new Ball(SIZE/2, SIZE - OFFSET_BALL_AMOUNT, BALL_RADIUS);
-        bricks = new Bricks(SIZE, SIZE, BRICK_SIZE, BRICK_SIZE, 0.1);
+        int offsetPaddleAmount = 50;
+        int paddleWidth = 100;
+        paddle = new Rectangle(SCENE_SIZE / 2 - paddleWidth / 2, SCENE_SIZE - offsetPaddleAmount, paddleWidth, 20);
+        int offsetBallAmount = offsetPaddleAmount + 100;
+        int brickSize = 40;
+        double ballRadius = brickSize/2.5;
+        ball = new Ball(SCENE_SIZE /2, SCENE_SIZE - offsetBallAmount, ballRadius);
+        bricks = new Bricks(SCENE_SIZE, SCENE_SIZE, brickSize, brickSize, 0.1);
         lives = new SimpleIntegerProperty(3);
     }
 
