@@ -36,6 +36,7 @@ import javafx.util.Duration;
  */
 public class Breakout extends Application {
 
+    // No particular reasoning behind the scene, font size, or font type besides personal preference
     private final int SCENE_SIZE = 800;
     private final int FONT_SIZE = 30;
     private final String FONT_TYPE = "Verdana";
@@ -108,7 +109,7 @@ public class Breakout extends Application {
     }
 
     private void step (double elapsedTime) {
-        handleDelayingIntersectionFrames();
+//        handleDelayingIntersectionFrames();
         handleIntersections();
         updateBallPosition(elapsedTime);
         handleNoBricksRemaining();
@@ -116,6 +117,9 @@ public class Breakout extends Application {
 
     // Borrowed from example_animation in course gitlab
     private void handleKeyInput (KeyCode code) {
+        // This paddle speed was the minimum value, based on the max X speed being 300 in the
+        // Ball class, that I found where the player would almost always only miss the ball
+        // due to their own fault
         int paddleSpeed = 25;
         switch (code) {
             case RIGHT -> paddle.setX(paddle.getX() + paddleSpeed);
@@ -133,6 +137,10 @@ public class Breakout extends Application {
     // https://stackoverflow.com/questions/8866389/java-gaming-collision-detection-side-collision-with-rectangles
     private boolean isSideCollision(Node stationaryNode, Ball ball) {
         return stationaryNode.getBoundsInParent().getMinY() < ball.getCenterY() && stationaryNode.getBoundsInParent().getMaxY() > ball.getCenterY();
+    }
+
+    private boolean isBottomCollision(Node stationaryNode, Ball ball) {
+        return stationaryNode.getBoundsInParent().getMaxY() < ball.getCenterY();
     }
 
     private void handleBallIntersectingBounds() {
@@ -173,12 +181,14 @@ public class Breakout extends Application {
     }
 
     private void handleBallIntersectingPaddle() {
-        if (isIntersecting(paddle, ball) ) {
+        if (isIntersecting(paddle, ball) && !isBottomCollision(paddle, ball)) {
             ball.reverseYVelocity();
             if (isSideCollision(paddle, ball)) {
                 ball.reverseXVelocity();
             } else if (delayIntersectionFrames == 2){
                 ball.setAngle(ball.getAngle() + Math.toRadians(0.5 * ((paddle.getBoundsInParent().getMinX() + paddle.getWidth() / 2) - ball.getCenterX())));
+            } else {
+                handleDelayingIntersectionFrames();
             }
         }
     }
@@ -227,13 +237,20 @@ public class Breakout extends Application {
     }
 
     private void setupMainSceneNodes() {
-        // Rectangle constructor parameters from example_animation in course gitlab
         int offsetPaddleAmount = 50;
-        int paddleWidth = 100;
+        // I found that this was the "goldilocks" size, since not too many bricks were on the screen
+        // so that the game would quickly become boring, but there were enough that winning the game
+        // wasn't trivial
+        int brickSize = 49;
+        // This made the ball small enough to fit in empty spaces in between bricks and not too small
+        // to look odd visually
+        double ballRadius = brickSize/3.0;
+        // This made the paddle wide enough to easily fit the ball, but not too wide as to make the game
+        // completely trivial to win
+        int paddleWidth = (int) ballRadius * 8;
+        // Rectangle constructor parameters from example_animation in course gitlab
         paddle = new Rectangle(SCENE_SIZE / 2 - paddleWidth / 2, SCENE_SIZE - offsetPaddleAmount, paddleWidth, 20);
         int offsetBallAmount = offsetPaddleAmount + 100;
-        int brickSize = 40;
-        double ballRadius = brickSize/2.5;
         ball = new Ball(SCENE_SIZE /2, SCENE_SIZE - offsetBallAmount, ballRadius);
         bricks = new Bricks(SCENE_SIZE, SCENE_SIZE, brickSize, brickSize, 0.1);
         lives = new SimpleIntegerProperty(3);

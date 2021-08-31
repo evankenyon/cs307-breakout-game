@@ -11,7 +11,7 @@ Start Date: 8/26/21
 
 Finish Date: 8/31/21
 
-Hours Spent: 13
+Hours Spent: 15
 
 ### Tutorial and other Resources Used
 * example_animation course gitlab repo for basic Breakout class setup
@@ -32,7 +32,9 @@ Key/Mouse inputs:
 * Space bar: start the ball's movement at the beginning of the game or after losing a life
 
 Known Bugs: 
-* Bricks are cut off at right side of the screen, but can still be destroyed
+* Ball can get glitched inside of paddle when the player moves the paddle into the inside of the ball (if this happens, move the 
+paddle around to get it unstuck)
+* Ball can reverse y direction instead of x direction as desired when it hits the corner of a brick
 
 
 ### Notes/Assumptions

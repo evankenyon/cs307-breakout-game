@@ -13,11 +13,14 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Purpose:
- * Assumptions:
- * Dependencies:
- * Example:
- * Other details:
+ * Purpose: Construct the bricks that the ball will be breaking in the breakout game.
+ * Assumptions: JavaFX installed on device, values of vars do not push past practical limits (details provided in
+ * JavaDoc of constrctor)
+ * Dependencies: This class depends on several classes from the JavaFX platform and the Random class, the ArrayList class,
+ * and the List class.
+ * Example: Construct a Bricks object with reasonable arguments to be used in the Breakout class, and have that class
+ * call the necessary methods in this class for dealing with the ball intersecting with bricks
+ * Other details: Explanation for the algorithm for brick generation can be found in the README.
  *
  * @author Evan Kenyon
  */
@@ -38,7 +41,9 @@ public class Bricks extends Group {
     /**
      * Purpose: Construct a Bricks object which has the number of bricks (Rectangles) of size brickWidth x brickHeight
      * that fit into a sceneWidth x sceneHeight/2 area, with roughly blockRowOrColFreq of the rows/columns empty
-     * Assumptions:
+     * Assumptions: sceneWidth and sceneHeight are the actual scene dimensions, brickWidth is 1 less
+     * than a factor of the sceneWidth, blockRowOrColFreq is less than 1 (and preferably less than 0.9), and
+     * brickWidth and brickHeight are reasonable values (i.e. 1 brick will not be bigger than the whole scene)
      * @param sceneWidth scene width, used so that bricks aren't generated outside of scene
      * @param sceneHeight scene height, used so that bricks aren't generated outside of scene
      * @param brickWidth width of each brick
@@ -85,10 +90,7 @@ public class Bricks extends Group {
             for(int y = 0; y <= sceneHeight/2; y += brickHeight + 1) {
                 if(! (blockedX.contains(x) || blockedY.contains(y))) {
                     Rectangle newBrick = new Rectangle(x, y, brickWidth, brickHeight);
-                    // Made range for colors 0.1 to 1.0 instead of generic 0.0 to 1.0 so that bricks wouldn't be hard to see
-                    // Based off of random color generator found at
-                    // https://stackoverflow.com/questions/35715283/set-text-to-random-color-opacity-javafx/35715848
-                    newBrick.setFill(Color.color((Math.random() * 0.9) + 0.1, (Math.random() * 0.9) + 0.1, (Math.random() * 0.9) + 0.1));
+                    newBrick.setFill(Color.color(generateRandomColorPercent(), generateRandomColorPercent(), generateRandomColorPercent()));
                     getChildren().add(newBrick);
                 }
             }
@@ -99,15 +101,14 @@ public class Bricks extends Group {
      * Purpose: See if a shape is intersecting with a brick
      * Assumptions: shape is in the same scene as a brick, shape could conceivably intersect with a brick
      * @param shape the shape which is checked to see if its intersecting with a brick
-     * @return
+     * @return the brick that shape is intersecting with, or null
      */
     public Node getBrickIntersecting(Shape shape) {
         for(Node brick : getChildren()) {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
-                Node oldBrick = brick;
                 getChildren().remove(brick);
                 score.set(score.get() + 1);
-                return oldBrick;
+                return brick;
             }
         }
         return null;
@@ -129,5 +130,12 @@ public class Bricks extends Group {
      */
     public IntegerProperty getScore() {
         return score;
+    }
+
+    // Made range for colors 0.1 to 1.0 instead of generic 0.0 to 1.0 so that bricks wouldn't be hard to see
+    // Based off of random color generator found at
+    // https://stackoverflow.com/questions/35715283/set-text-to-random-color-opacity-javafx/35715848
+    private double generateRandomColorPercent() {
+        return (Math.random() * 0.9) + 0.1;
     }
 }
