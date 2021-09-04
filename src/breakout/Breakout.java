@@ -37,6 +37,7 @@ import javafx.util.Duration;
 public class Breakout extends Application {
 
     // No particular reasoning behind the scene, font size, or font type besides personal preference
+    // Can put reasoning behind magic values in README or in comments, only do it for important values too
     private final int SCENE_SIZE = 800;
     private final int FONT_SIZE = 30;
     private final String FONT_TYPE = "Verdana";
@@ -49,6 +50,8 @@ public class Breakout extends Application {
     private Bricks bricks;
     private int delayIntersectionFrames;
     private IntegerProperty lives;
+
+    // Make these private
     Stage primaryStage;
     Group primaryRoot;
 
@@ -71,6 +74,8 @@ public class Breakout extends Application {
 
     private Scene setupGame() {
         setupMainSceneNodes();
+        // put as a constant/global
+        // Fine to make numbers and strings as constants ("magic values")
         double scoreDisplayYPos = 600;
         Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), scoreDisplayYPos);
         Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), scoreDisplayYPos + 50);
@@ -83,6 +88,7 @@ public class Breakout extends Application {
 
     private Scene setupTextScene(String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+        // put 50s as constants
         Text text = new Text(50, 50, message);
         text.setFont(Font.font (FONT_TYPE, FONT_SIZE));
         // All of the below was borrowed from example_animation in course gitlab
@@ -100,6 +106,7 @@ public class Breakout extends Application {
     private Label setupDynamicDataDisplay(String text, StringBinding data, double yVal) {
         Label display = new Label();
         display.setFont(new Font(FONT_TYPE, FONT_SIZE));
+        // Don't need to attribute for official Java documentation
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
@@ -109,6 +116,7 @@ public class Breakout extends Application {
     }
 
     private void step (double elapsedTime) {
+//        Check to see if need this or not
 //        handleDelayingIntersectionFrames();
         handleIntersections();
         updateBallPosition(elapsedTime);
@@ -120,6 +128,7 @@ public class Breakout extends Application {
         // This paddle speed was the minimum value, based on the max X speed being 300 in the
         // Ball class, that I found where the player would almost always only miss the ball
         // due to their own fault
+        // Make constant
         int paddleSpeed = 25;
         switch (code) {
             case RIGHT -> paddle.setX(paddle.getX() + paddleSpeed);
@@ -237,6 +246,7 @@ public class Breakout extends Application {
     }
 
     private void setupMainSceneNodes() {
+        // Can put these comments in README, generally do when it looks crowded
         int offsetPaddleAmount = 50;
         // I found that this was the "goldilocks" size, since not too many bricks were on the screen
         // so that the game would quickly become boring, but there were enough that winning the game

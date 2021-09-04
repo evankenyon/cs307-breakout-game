@@ -3,6 +3,8 @@ package breakout;
 import javafx.scene.shape.Circle;
 import java.util.Random;
 
+// Can also have circle as member var, but this is cool too
+// Can be more useful to have as a member var when things get more complicated (e.g. if we want a hexagon ball)
 /**
  * Purpose: Create a ball in the Breakout class that is used to break bricks by bouncing it off of a paddle.
  * Assumptions: JavaFX installed on device, values of vars do not push past practical limits
@@ -128,11 +130,13 @@ public class Ball extends Circle {
     }
 
     private void randomizeAngle() {
+        // Don't need these comments unless complicated
         // Set the range to pi/6 through pi instead of 0 through pi to make
         // sure that the angle isn't so small that the ball is barely moving vertically
         angle = (rand.nextDouble() * (5*Math.PI)/6) + Math.PI/6;
     }
 
+    // Make the following 2 method names more clear
     private void setSpeed() {
         xVelocity = 300*Math.cos(angle);
         yVelocity = -300*Math.sin(angle);

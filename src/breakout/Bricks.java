@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// Probably don't want Bricks to extend group
 /**
  * Purpose: Construct the bricks that the ball will be breaking in the breakout game.
  * Assumptions: JavaFX installed on device, values of vars do not push past practical limits (details provided in
@@ -114,6 +115,7 @@ public class Bricks extends Group {
         return null;
     }
 
+    // don't need to put assumptions: if there aren't any assumptions
     /**
      * Purpose: Check if any bricks haven't been hit by the ball yet
      * Assumptions: none
