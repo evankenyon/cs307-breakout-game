@@ -38,9 +38,34 @@ public class Breakout extends Application {
 
     // No particular reasoning behind the scene, font size, or font type besides personal preference
     // Can put reasoning behind magic values in README or in comments, only do it for important values too
-    private final int SCENE_SIZE = 800;
-    private final int FONT_SIZE = 30;
-    private final String FONT_TYPE = "Verdana";
+    // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
+    // borrowed from example_animation in course gitlab
+    public static final int SCENE_SIZE = 800;
+    public static final int FONT_SIZE = 30;
+    public static final String FONT_TYPE = "Verdana";
+    // Can put these comments in README, generally do when it looks crowded
+    public static final int OFFSET_PADDLE_AMOUNT = 50;
+    public static final int OFFSET_BALL_AMOUNT = OFFSET_PADDLE_AMOUNT + 100;
+    // I found that this was the "goldilocks" size, since not too many bricks were on the screen
+    // so that the game would quickly become boring, but there were enough that winning the game
+    // wasn't trivial
+    public static final int BRICK_SIZE = 49;
+    // This made the ball small enough to fit in empty spaces in between bricks and not too small
+    // to look odd visually
+    public static final double BALL_RADIUS = BRICK_SIZE /3.0;
+    // This made the paddle wide enough to easily fit the ball, but not too wide as to make the game
+    // completely trivial to win
+    public static final int PADDLE_WIDTH = (int) BALL_RADIUS * 8;
+    public static final double SECOND_DELAY = 1.0 / 60;
+    public static final String TITLE = "Breakout Game";
+    // This paddle speed was the minimum value, based on the max X speed being 300 in the
+    // Ball class, that I found where the player would almost always only miss the ball
+    // due to their own fault
+    public static final int PADDLE_SPEED = 25;
+    public static final int TEXT_POSITION_X = 50;
+    public static final int TEXT_POSITION_Y = 50;
+    public static final int PADDLE_HEIGHT = 20;
+    public static final double BLOCKED_ROW_OR_COL_FREQ = 0.1;
 
     private Scene mainScene;
     private Scene gameOverScene;
@@ -89,8 +114,7 @@ public class Breakout extends Application {
 
     private Scene setupTextScene(String message) {
         // Text construction was borrowed from https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-        // put 50s as constants
-        Text text = new Text(50, 50, message);
+        Text text = new Text(TEXT_POSITION_X, TEXT_POSITION_Y, message);
         text.setFont(Font.font (FONT_TYPE, FONT_SIZE));
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(text);
@@ -111,7 +135,7 @@ public class Breakout extends Application {
         // Found concat method and SimpleStringProperty from
         // https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/SimpleStringProperty.html
         display.textProperty().bind(new SimpleStringProperty(text).concat(data));
-        display.setLayoutX(50);
+        display.setLayoutX(TEXT_POSITION_X);
         display.setLayoutY(yVal);
         return display;
     }
@@ -126,14 +150,9 @@ public class Breakout extends Application {
 
     // Borrowed from example_animation in course gitlab
     private void handleKeyInput (KeyCode code) {
-        // This paddle speed was the minimum value, based on the max X speed being 300 in the
-        // Ball class, that I found where the player would almost always only miss the ball
-        // due to their own fault
-        // Make constant
-        int paddleSpeed = 25;
         switch (code) {
-            case RIGHT -> paddle.setX(paddle.getX() + paddleSpeed);
-            case LEFT -> paddle.setX(paddle.getX() - paddleSpeed);
+            case RIGHT -> paddle.setX(paddle.getX() + PADDLE_SPEED);
+            case LEFT -> paddle.setX(paddle.getX() - PADDLE_SPEED);
             case SPACE -> ball.setIsMoving(true);
         }
     }
@@ -225,10 +244,7 @@ public class Breakout extends Application {
     private void setupPrimaryStage(Stage stage) {
         primaryStage = stage;
         primaryStage.setScene(mainScene);
-        // size, frames per second, second delay, background, highlight, offset amount, mover, paddle color, and paddle color
-        // borrowed from example_animation in course gitlab
-        String title = "Breakout Game";
-        primaryStage.setTitle(title);
+        primaryStage.setTitle(TITLE);
         primaryStage.show();
     }
 
@@ -241,29 +257,15 @@ public class Breakout extends Application {
     private void setupTimeline() {
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
-        double secondDelay = 1.0 / 60;
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(secondDelay), e -> step(secondDelay)));
+        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(SECOND_DELAY), e -> step(SECOND_DELAY)));
         animation.play();
     }
 
     private void setupMainSceneNodes() {
-        // Can put these comments in README, generally do when it looks crowded
-        int offsetPaddleAmount = 50;
-        // I found that this was the "goldilocks" size, since not too many bricks were on the screen
-        // so that the game would quickly become boring, but there were enough that winning the game
-        // wasn't trivial
-        int brickSize = 49;
-        // This made the ball small enough to fit in empty spaces in between bricks and not too small
-        // to look odd visually
-        double ballRadius = brickSize/3.0;
-        // This made the paddle wide enough to easily fit the ball, but not too wide as to make the game
-        // completely trivial to win
-        int paddleWidth = (int) ballRadius * 8;
         // Rectangle constructor parameters from example_animation in course gitlab
-        paddle = new Rectangle(SCENE_SIZE / 2 - paddleWidth / 2, SCENE_SIZE - offsetPaddleAmount, paddleWidth, 20);
-        int offsetBallAmount = offsetPaddleAmount + 100;
-        ball = new Ball(SCENE_SIZE /2, SCENE_SIZE - offsetBallAmount, ballRadius);
-        bricks = new Bricks(SCENE_SIZE, SCENE_SIZE, brickSize, brickSize, 0.1);
+        paddle = new Rectangle(SCENE_SIZE / 2 - PADDLE_WIDTH / 2, SCENE_SIZE - OFFSET_PADDLE_AMOUNT, PADDLE_WIDTH, PADDLE_HEIGHT);
+        ball = new Ball(SCENE_SIZE /2, SCENE_SIZE - OFFSET_BALL_AMOUNT, BALL_RADIUS);
+        bricks = new Bricks(SCENE_SIZE, SCENE_SIZE, BRICK_SIZE, BRICK_SIZE, BLOCKED_ROW_OR_COL_FREQ);
         lives = new SimpleIntegerProperty(3);
     }
 

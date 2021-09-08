@@ -111,13 +111,6 @@ public class Bricks {
      * @return the brick that shape is intersecting with, or null
      */
     public Node getBrickIntersecting(Shape shape) {
-//        Iterator<Rectangle> bricksIterator = bricks.iterator();
-//        while (bricksIterator.hasNext()) {
-//            score.set(score.get() + 1);
-//            Rectangle brick = bricksIterator.next(); // must be called before you can call i.remove()
-//            bricksIterator.remove();
-//            return bricksIterator.;
-//        }
         for(Node brick : bricks) {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
                 Node oldBrick = brick;
