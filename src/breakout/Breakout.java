@@ -66,6 +66,7 @@ public class Breakout extends Application {
     public static final int TEXT_POSITION_Y = 50;
     public static final int PADDLE_HEIGHT = 20;
     public static final double BLOCKED_ROW_OR_COL_FREQ = 0.1;
+    public static final double SCORE_DISPLAY_Y_POS = 600;
 
     private Scene mainScene;
     private Scene gameOverScene;
@@ -75,10 +76,8 @@ public class Breakout extends Application {
     private Bricks bricks;
     private int delayIntersectionFrames;
     private IntegerProperty lives;
-
-    // Make these private
-    Stage primaryStage;
-    Group primaryRoot;
+    private Stage primaryStage;
+    private Group primaryRoot;
 
 
     /**
@@ -99,11 +98,9 @@ public class Breakout extends Application {
 
     private Scene setupGame() {
         setupMainSceneNodes();
-        // put as a constant/global
         // Fine to make numbers and strings as constants ("magic values")
-        double scoreDisplayYPos = 600;
-        Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), scoreDisplayYPos);
-        Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), scoreDisplayYPos + 50);
+        Label scoreDisplay = setupDynamicDataDisplay("Score: ", bricks.getScore().asString(), SCORE_DISPLAY_Y_POS);
+        Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), SCORE_DISPLAY_Y_POS + 50);
         delayIntersectionFrames = 2;
         // All of the below was borrowed from example_animation in course gitlab
         Group root = new Group(paddle, ball, scoreDisplay, livesDisplay);

@@ -41,7 +41,7 @@ public class Ball extends Circle {
         originalCenterY = centerY;
         isMoving = false;
         rand = new Random();
-        randomizeSpeed();
+        randomizeVelocities();
     }
 
     /**
@@ -116,7 +116,7 @@ public class Ball extends Circle {
      */
     public void setAngle(double angle) {
         this.angle = angle;
-        setSpeed();
+        setVelocitiesFromAngle();
     }
 
     /**
@@ -126,25 +126,21 @@ public class Ball extends Circle {
     public void resetPosition() {
         setCenterY(originalCenterY);
         setCenterX(originalCenterX);
-        randomizeSpeed();
+        randomizeVelocities();
     }
 
     private void randomizeAngle() {
-        // Don't need these comments unless complicated
-        // Set the range to pi/6 through pi instead of 0 through pi to make
-        // sure that the angle isn't so small that the ball is barely moving vertically
         angle = (rand.nextDouble() * (5*Math.PI)/6) + Math.PI/6;
     }
 
-    // Make the following 2 method names more clear
-    private void setSpeed() {
+    private void setVelocitiesFromAngle() {
         xVelocity = 300*Math.cos(angle);
         yVelocity = -300*Math.sin(angle);
     }
 
-    private void randomizeSpeed() {
+    private void randomizeVelocities() {
         randomizeAngle();
-        setSpeed();
+        setVelocitiesFromAngle();
     }
 
     /**
