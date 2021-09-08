@@ -81,7 +81,8 @@ public class Breakout extends Application {
         Label livesDisplay = setupDynamicDataDisplay("Lives: ", lives.asString(), scoreDisplayYPos + 50);
         delayIntersectionFrames = 2;
         // All of the below was borrowed from example_animation in course gitlab
-        Group root = new Group(paddle, ball, bricks, scoreDisplay, livesDisplay);
+        Group root = new Group(paddle, ball, scoreDisplay, livesDisplay);
+        root.getChildren().addAll(bricks.getBricks());
         primaryRoot = root;
         return setupScene(root);
     }

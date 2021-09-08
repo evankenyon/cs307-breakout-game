@@ -2,30 +2,30 @@ package breakout;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import org.w3c.dom.css.Rect;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-// Probably don't want Bricks to extend group
 /**
  * Purpose: Construct the bricks that the ball will be breaking in the breakout game.
  * Assumptions: JavaFX installed on device, values of vars do not push past practical limits (details provided in
  * JavaDoc of constrctor)
- * Dependencies: This class depends on several classes from the JavaFX platform and the Random class, the ArrayList class,
- * and the List class.
+ * Dependencies: This class depends on several classes from the JavaFX platform and the Random class, the Iterator class,
+ * the ArrayList class, and the List class.
  * Example: Construct a Bricks object with reasonable arguments to be used in the Breakout class, and have that class
  * call the necessary methods in this class for dealing with the ball intersecting with bricks
  * Other details: Explanation for the algorithm for brick generation can be found in the README.
  *
  * @author Evan Kenyon
  */
-public class Bricks extends Group {
+public class Bricks {
 
     // Integer Property code for score in this class was borrowed from
     // https://stackoverflow.com/questions/56016866/how-do-i-output-updating-values-for-my-scoreboard
@@ -38,6 +38,7 @@ public class Bricks extends Group {
     private int sceneHeight;
     private IntegerProperty score;
     private double blockedRowOrColFreq;
+    private List<Rectangle> bricks;
 
     /**
      * Purpose: Construct a Bricks object which has the number of bricks (Rectangles) of size brickWidth x brickHeight
@@ -55,6 +56,7 @@ public class Bricks extends Group {
         rand = new Random();
         blockedX = new ArrayList<>();
         blockedY = new ArrayList<>();
+        bricks = new ArrayList<>();
         score = new SimpleIntegerProperty(0);
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
@@ -63,6 +65,10 @@ public class Bricks extends Group {
         this.blockedRowOrColFreq = blockedRowOrColFreq;
         addBlockedCoordinates();
         generateBricks();
+    }
+
+    public List<Rectangle> getBricks() {
+        return bricks;
     }
 
     private void addBlockedCoordinates() {
@@ -92,7 +98,7 @@ public class Bricks extends Group {
                 if(! (blockedX.contains(x) || blockedY.contains(y))) {
                     Rectangle newBrick = new Rectangle(x, y, brickWidth, brickHeight);
                     newBrick.setFill(Color.color(generateRandomColorPercent(), generateRandomColorPercent(), generateRandomColorPercent()));
-                    getChildren().add(newBrick);
+                    bricks.add(newBrick);
                 }
             }
         }
@@ -105,11 +111,19 @@ public class Bricks extends Group {
      * @return the brick that shape is intersecting with, or null
      */
     public Node getBrickIntersecting(Shape shape) {
-        for(Node brick : getChildren()) {
+//        Iterator<Rectangle> bricksIterator = bricks.iterator();
+//        while (bricksIterator.hasNext()) {
+//            score.set(score.get() + 1);
+//            Rectangle brick = bricksIterator.next(); // must be called before you can call i.remove()
+//            bricksIterator.remove();
+//            return bricksIterator.;
+//        }
+        for(Node brick : bricks) {
             if(shape.getBoundsInParent().intersects(brick.getBoundsInParent())) {
-                getChildren().remove(brick);
+                Node oldBrick = brick;
+                bricks.remove(brick);
                 score.set(score.get() + 1);
-                return brick;
+                return oldBrick;
             }
         }
         return null;
@@ -122,7 +136,7 @@ public class Bricks extends Group {
      * @return true if all bricks have been hit by the ball, false otherwise
      */
     public boolean isBrickRemaining() {
-        return getChildren().size() != 0;
+        return bricks.size() != 0;
     }
 
     /**
